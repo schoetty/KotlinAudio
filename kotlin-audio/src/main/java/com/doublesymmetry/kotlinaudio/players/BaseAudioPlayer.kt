@@ -229,6 +229,10 @@ abstract class BaseAudioPlayer internal constructor(
         playerEventHolder.updateAudioPlayerState(AudioPlayerState.IDLE)
     }
 
+    public fun getMediaSessionToken(): MediaSessionCompat.Token {
+        return mediaSession.sessionToken
+    }
+
     private fun createForwardingPlayer(): ForwardingPlayer {
         return object : ForwardingPlayer(exoPlayer) {
             override fun play() {
