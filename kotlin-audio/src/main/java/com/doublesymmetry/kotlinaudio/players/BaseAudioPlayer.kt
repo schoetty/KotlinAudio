@@ -190,7 +190,11 @@ abstract class BaseAudioPlayer internal constructor(
                 if (bufferConfig != null) setLoadControl(setupBuffer(bufferConfig))
             }
             .build()
-
+            
+        mediaSession.setFlags(
+            MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
+            MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+        )
         mediaSession.isActive = true
 
         val playerToUse =
