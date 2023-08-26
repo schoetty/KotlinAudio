@@ -495,7 +495,7 @@ class NotificationManager internal constructor(
      */
     fun createNotification(config: NotificationConfig) = scope.launch {
         if (isNotificationButtonsChanged(config.buttons)) {
-            hideNotification()
+            // hideNotification()
         }
 
         buttons.apply {
