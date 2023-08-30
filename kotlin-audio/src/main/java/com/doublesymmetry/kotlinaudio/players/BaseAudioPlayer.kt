@@ -51,13 +51,15 @@ abstract class BaseAudioPlayer internal constructor(
     internal val context: Context,
     playerConfig: PlayerConfig,
     private val bufferConfig: BufferConfig?,
-    private val cacheConfig: CacheConfig?
+    private val cacheConfig: CacheConfig?,
+    mediaSessionCallback: AAMediaSessionCallBack
 ) : AudioManager.OnAudioFocusChangeListener {
     protected val exoPlayer: ExoPlayer
 
     private var cache: SimpleCache? = null
     private val scope = MainScope()
     private var playerConfig: PlayerConfig = playerConfig
+    var mediaSessionCallBack: AAMediaSessionCallBack = mediaSessionCallback
 
     val notificationManager: NotificationManager
 
@@ -196,6 +198,82 @@ abstract class BaseAudioPlayer internal constructor(
         val playerToUse =
             if (playerConfig.interceptPlayerActionsTriggeredExternally) createForwardingPlayer() else exoPlayer
 
+        mediaSession.setCallback(object: MediaSessionCompat.Callback() {
+            override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
+                Timber.tag("GVATest").d("playing from mediaID: %s", mediaId)
+                mediaSessionCallback.handlePlayFromMediaId(mediaId, extras)
+            }
+
+            override fun onPlayFromSearch(query: String?, extras: Bundle?) {
+                super.onPlayFromSearch(query, extras)
+                Timber.tag("GVATest").d("playing from query: %s", query)
+                mediaSessionCallback.handlePlayFromSearch(query, extras)
+            }
+            // https://stackoverflow.com/questions/53837783/selecting-media-item-in-android-auto-queue-does-nothing
+            override fun onSkipToQueueItem(id: Long) {
+                mediaSessionCallback.handleSkipToQueueItem(id)
+            }
+            // TODO: what's missing?
+            override fun onPlay() {
+                playerToUse.play()
+            }
+
+            override fun onPause() {
+                playerToUse.pause()
+            }
+
+            override fun onSkipToNext() {
+                playerToUse.seekToNext()
+            }
+
+            override fun onSkipToPrevious() {
+                playerToUse.seekToPrevious()
+            }
+
+            override fun onFastForward() {
+                playerToUse.seekForward()
+            }
+
+            override fun onRewind() {
+                playerToUse.seekBack()
+            }
+
+            override fun onStop() {
+                playerToUse.stop()
+            }
+
+            override fun onSeekTo(pos: Long) {
+                playerToUse.seekTo(pos)
+            }
+
+            override fun onSetRating(rating: RatingCompat?) {
+                if (rating == null) return
+                playerEventHolder.updateOnPlayerActionTriggeredExternally(
+                    MediaSessionCallback.RATING(
+                        rating, null
+                    )
+                )
+            }
+
+            override fun onSetRating(rating: RatingCompat?, extras: Bundle?) {
+                if (rating == null) return
+                playerEventHolder.updateOnPlayerActionTriggeredExternally(
+                    MediaSessionCallback.RATING(
+                        rating,
+                        extras
+                    )
+                )
+            }
+            // see NotificationManager.kt. onRewind, onFastForward and onStop do not trigger.
+            override fun onCustomAction(action: String?, extras: Bundle?) {
+                when (action) {
+                    NotificationManager.REWIND -> playerToUse.seekBack()
+                    NotificationManager.FORWARD -> playerToUse.seekForward()
+                    NotificationManager.STOP-> playerToUse.stop()
+                }
+            }
+        })
+
         notificationManager = NotificationManager(
             context,
             playerToUse,
@@ -227,6 +305,10 @@ abstract class BaseAudioPlayer internal constructor(
         }
 
         playerEventHolder.updateAudioPlayerState(AudioPlayerState.IDLE)
+    }
+
+    public fun getMediaSessionToken(): MediaSessionCompat.Token {
+        return mediaSession.sessionToken
     }
 
     private fun createForwardingPlayer(): ForwardingPlayer {

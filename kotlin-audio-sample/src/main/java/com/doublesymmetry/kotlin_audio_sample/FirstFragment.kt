@@ -36,6 +36,19 @@ class FirstFragment : Fragment() {
         return binding.root
     }
 
+    private val myMediaSessionCallBack = object: AAMediaSessionCallBack {
+        override fun handlePlayFromMediaId(mediaId: String?, extra: Bundle?) {
+            Timber.tag("Test").d("playing from mediaID: %s", mediaId)
+        }
+
+        override fun handlePlayFromSearch(query: String?, extras: Bundle?) {
+            Timber.tag("Test").d("playing from query: %s", query)
+        }
+
+        override fun handleSkipToQueueItem(id: Long) {
+            Timber.tag("Test").d("playing from id ")
+        }
+    }
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,7 +58,8 @@ class FirstFragment : Fragment() {
                 interceptPlayerActionsTriggeredExternally = true,
                 handleAudioBecomingNoisy = true,
                 handleAudioFocus = true
-            )
+            ),
+            mediaSessionCallback = myMediaSessionCallBack
         )
         player.add(firstItem)
         player.add(secondItem)
