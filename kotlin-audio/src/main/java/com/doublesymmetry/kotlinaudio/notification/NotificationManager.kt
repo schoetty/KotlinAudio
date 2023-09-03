@@ -156,6 +156,7 @@ class NotificationManager internal constructor(
     var stopIcon: Int? = null
     var forwardIcon: Int? = null
     var rewindIcon: Int? = null
+    var customIcons: MutableMap<String, Int?> = mutableMapOf()
 
     private fun getCurrentItemHolder(): AudioItemHolder? {
         return player?.currentMediaItem?.localConfiguration?.tag as AudioItemHolder?
@@ -241,6 +242,9 @@ class NotificationManager internal constructor(
             STOP -> {
                 playerEventHolder.updateOnPlayerActionTriggeredExternally(MediaSessionCallback.STOP)
             }
+            else -> {
+                playerEventHolder.updateOnPlayerActionTriggeredExternally(MediaSessionCallback.CUSTOMACTION(action))
+            }
 
         }
     }
@@ -251,7 +255,7 @@ class NotificationManager internal constructor(
             instanceId: Int
         ): MutableMap<String, NotificationCompat.Action> {
             if (!needsCustomActionsToAddMissingButtons) return mutableMapOf()
-            return mutableMapOf(
+            val actionMap = mutableMapOf(
                 REWIND to createNotificationAction(
                     rewindIcon ?: DEFAULT_REWIND_ICON,
                     REWIND,
@@ -268,6 +272,10 @@ class NotificationManager internal constructor(
                     instanceId
                 )
             )
+            customIcons.forEach { (key, value) ->
+                actionMap[key] = createNotificationAction(value?: DEFAULT_STOP_ICON, key, instanceId)
+            }
+            return actionMap
         }
 
         override fun getCustomActions(player: Player): List<String> {
@@ -282,6 +290,9 @@ class NotificationManager internal constructor(
                     }
                     is NotificationButton.STOP -> {
                         STOP
+                    }
+                    is NotificationButton.CUSTOM_ACTION -> {
+                        it.customAction
                     }
                     else -> {
                         null
@@ -339,6 +350,11 @@ class NotificationManager internal constructor(
                     is NotificationButton.STOP -> {
                         stopIcon = button.icon ?: stopIcon
                         PlaybackStateCompat.ACTION_STOP
+                    }
+                    is NotificationButton.CUSTOM_ACTION -> {
+                        stopIcon = button.icon ?: stopIcon
+                        customIcons[button.customAction ?: "DEFAULT_CUSTOM"] = button.icon ?: stopIcon
+                        PlaybackStateCompat.ACTION_SET_RATING
                     }
                     else -> {
                         0
@@ -422,6 +438,9 @@ class NotificationManager internal constructor(
                         }
                         is NotificationButton.STOP -> {
                             createMediaSessionAction(stopIcon ?: DEFAULT_STOP_ICON, STOP)
+                        }
+                        is NotificationButton.CUSTOM_ACTION -> {
+                            createMediaSessionAction(customIcons[it.customAction] ?: DEFAULT_CUSTOM_ICON, it.customAction ?: "NO_ACTION_CODE_PROVIDED")
                         }
                         else -> {
                             null
@@ -569,7 +588,7 @@ class NotificationManager internal constructor(
         // Due to the removal of rewind, forward, and stop buttons from the standard notification
         // controls in Android 13, custom actions are implemented to support them
         // https://developer.android.com/about/versions/13/behavior-changes-13#playback-controls
-        private val needsCustomActionsToAddMissingButtons = Build.VERSION.SDK_INT >= 33
+        private val needsCustomActionsToAddMissingButtons = true
         public const val REWIND = "rewind"
         public const val FORWARD = "forward"
         public const val STOP = "stop"
@@ -581,5 +600,7 @@ class NotificationManager internal constructor(
             com.google.android.exoplayer2.ui.R.drawable.exo_notification_rewind
         private val DEFAULT_FORWARD_ICON =
             com.google.android.exoplayer2.ui.R.drawable.exo_notification_fastforward
+        private val DEFAULT_CUSTOM_ICON =
+            com.google.android.exoplayer2.ui.R.drawable.exo_edit_mode_logo
     }
 }

@@ -31,7 +31,7 @@ data class NotificationConfig(
  * @see [com.doublesymmetry.kotlinaudio.notification.NotificationManager.showPreviousButtonCompact]
  */
 @Suppress("ClassName")
-sealed class NotificationButton {
+sealed class NotificationButton(val customAction: String? = null) {
     class PLAY_PAUSE(@DrawableRes val playIcon: Int? = null, @DrawableRes val pauseIcon: Int? = null): NotificationButton()
     class STOP(@DrawableRes val icon: Int? = null): NotificationButton()
     class FORWARD(@DrawableRes val icon: Int? = null, val isCompact: Boolean = false): NotificationButton()
@@ -39,4 +39,5 @@ sealed class NotificationButton {
     class NEXT(@DrawableRes val icon: Int? = null, val isCompact: Boolean = false): NotificationButton()
     class PREVIOUS(@DrawableRes val icon: Int? = null, val isCompact: Boolean = false): NotificationButton()
     object SEEK_TO : NotificationButton()
+    class CUSTOM_ACTION(@DrawableRes val icon: Int? = null, val isCompact: Boolean = false, customAction: String): NotificationButton(customAction=customAction)
 }
