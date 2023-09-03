@@ -69,6 +69,10 @@ class MainActivity : ComponentActivity() {
             override fun handleSkipToQueueItem(id: Long) {
                 TODO("Not yet implemented")
             }
+
+            override fun handleCustomActions(action: String?, extras: Bundle?) {
+                TODO("Not yet implemented")
+            }
         }
         player = QueuedAudioPlayer(
             this, playerConfig = PlayerConfig(

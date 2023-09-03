@@ -306,6 +306,11 @@ abstract class BaseAudioPlayer internal constructor(
                     NotificationManager.REWIND -> playerToUse.seekBack()
                     NotificationManager.FORWARD -> playerToUse.seekForward()
                     NotificationManager.STOP-> playerToUse.stop()
+                    else -> playerEventHolder.updateOnPlayerActionTriggeredExternally(
+                            MediaSessionCallback.CUSTOMACTION(
+                                action ?: "NO_ACTION_CODE_PROVIDED"
+                            )
+                        )
                 }
             }
         })
