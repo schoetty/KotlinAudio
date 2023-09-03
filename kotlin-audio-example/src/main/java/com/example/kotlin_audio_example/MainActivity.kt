@@ -159,6 +159,7 @@ class MainActivity : ComponentActivity() {
                                 it.positionMs,
                                 TimeUnit.MILLISECONDS
                             )
+                            is MediaSessionCallback.CUSTOMACTION -> Timber.tag("Custom Action").d(it.customAction)
                             else -> Timber.d("Event not handled")
                         }
                     }
@@ -183,7 +184,9 @@ class MainActivity : ComponentActivity() {
                 NotificationButton.PLAY_PAUSE(),
                 NotificationButton.NEXT(isCompact = true),
                 NotificationButton.PREVIOUS(isCompact = true),
-                NotificationButton.SEEK_TO
+                NotificationButton.SEEK_TO,
+                NotificationButton.CUSTOM_ACTION(customAction="customaction1"),
+                NotificationButton.CUSTOM_ACTION(customAction="customaction2"),
             ), accentColor = null, smallIcon = null, pendingIntent = null
         )
         player.notificationManager.createNotification(notificationConfig)
