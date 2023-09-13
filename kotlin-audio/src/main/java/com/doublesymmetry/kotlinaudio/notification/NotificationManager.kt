@@ -474,21 +474,6 @@ class NotificationManager internal constructor(
                                 button.playIcon?.let { setPlayActionIconResourceId(it) }
                                 button.pauseIcon?.let { setPauseActionIconResourceId(it) }
                             }
-                            is NotificationButton.STOP -> button.icon?.let {
-                                setStopActionIconResourceId(
-                                    it
-                                )
-                            }
-                            is NotificationButton.FORWARD -> button.icon?.let {
-                                setFastForwardActionIconResourceId(
-                                    it
-                                )
-                            }
-                            is NotificationButton.BACKWARD -> button.icon?.let {
-                                setRewindActionIconResourceId(
-                                    it
-                                )
-                            }
                             is NotificationButton.NEXT -> button.icon?.let {
                                 setNextActionIconResourceId(
                                     it

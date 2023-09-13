@@ -364,12 +364,12 @@ abstract class BaseAudioPlayer internal constructor(
         }
     }
 
-    internal fun updateNotificationMetadataIfAutomatic() {
+    internal fun updateNotificationMetadataIfAutomatic(overrideAudioItem: AudioItem? = null) {
         if (automaticallyUpdateNotificationMetadata) {
             notificationManager.notificationMetadata = NotificationMetadata(
-                currentItem?.title,
-                currentItem?.artist,
-                currentItem?.artwork
+                overrideAudioItem?.title ?: currentItem?.title,
+                overrideAudioItem?.artist ?: currentItem?.artist,
+                overrideAudioItem?.artwork ?: currentItem?.artwork
             )
         }
     }
