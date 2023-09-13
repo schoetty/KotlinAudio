@@ -13,11 +13,13 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.RatingCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
 import coil.imageLoader
+import coil.request.Disposable
 import coil.request.ImageRequest
 import com.doublesymmetry.kotlinaudio.R
 import com.doublesymmetry.kotlinaudio.event.NotificationEventHolder
@@ -48,6 +50,7 @@ class NotificationManager internal constructor(
     private var internalNotificationManager: PlayerNotificationManager? = null
     private val scope = MainScope()
     private val buttons = mutableSetOf<NotificationButton?>()
+    private var notificationMetadataArtworkDisposable: Disposable? = null
     var notificationMetadata: NotificationMetadata? = null
         set(value) {
             // Clear bitmap cache if artwork changes
@@ -55,6 +58,18 @@ class NotificationManager internal constructor(
                 val holder = getCurrentItemHolder()
                 if (holder != null) {
                     holder.artworkBitmap = null
+                    if (value?.artworkUrl != null) {
+                        notificationMetadataArtworkDisposable?.dispose()
+                        notificationMetadataArtworkDisposable = context.imageLoader.enqueue(
+                            ImageRequest.Builder(context)
+                                .data(value.artworkUrl)
+                                .target { result ->
+                                    val bitmap = (result as BitmapDrawable).bitmap
+                                    holder.artworkBitmap = bitmap
+                                }
+                                .build()
+                        )
+                    }
                 }
             }
             field = value
@@ -212,6 +227,22 @@ class NotificationManager internal constructor(
         mediaSessionConnector.setMetadataDeduplicationEnabled(true)
     }
 
+    public fun getMediaMetadataCompat(): MediaMetadataCompat {
+        return MediaMetadataCompat.Builder().apply {
+            val audioHolder = getCurrentItemHolder()
+            val mediaItem = audioHolder?.audioItem
+            val currentMediaMetadata = player.currentMediaItem?.mediaMetadata
+            putString(MediaMetadataCompat.METADATA_KEY_ARTIST, notificationMetadata?.artist?: mediaItem?.artist)
+            putString(MediaMetadataCompat.METADATA_KEY_TITLE, notificationMetadata?.title?: mediaItem?.title)
+            putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mediaItem?.albumTitle)
+            putString(MediaMetadataCompat.METADATA_KEY_GENRE, currentMediaMetadata?.genre.toString())
+            putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mediaItem?.duration?: -1)
+            putString(MediaMetadataCompat.METADATA_KEY_ART_URI, notificationMetadata?.artworkUrl?: mediaItem?.artwork)
+            putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, audioHolder?.artworkBitmap);
+            putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, audioHolder?.artworkBitmap);
+            // putRating(MediaMetadataCompat.METADATA_KEY_RATING, RatingCompat.fromRating(currentMediaMetadata?.userRating))
+        }.build()
+    }
     private fun createNotificationAction(
         drawable: Int,
         action: String,
@@ -473,21 +504,6 @@ class NotificationManager internal constructor(
                             is NotificationButton.PLAY_PAUSE -> {
                                 button.playIcon?.let { setPlayActionIconResourceId(it) }
                                 button.pauseIcon?.let { setPauseActionIconResourceId(it) }
-                            }
-                            is NotificationButton.STOP -> button.icon?.let {
-                                setStopActionIconResourceId(
-                                    it
-                                )
-                            }
-                            is NotificationButton.FORWARD -> button.icon?.let {
-                                setFastForwardActionIconResourceId(
-                                    it
-                                )
-                            }
-                            is NotificationButton.BACKWARD -> button.icon?.let {
-                                setRewindActionIconResourceId(
-                                    it
-                                )
                             }
                             is NotificationButton.NEXT -> button.icon?.let {
                                 setNextActionIconResourceId(
