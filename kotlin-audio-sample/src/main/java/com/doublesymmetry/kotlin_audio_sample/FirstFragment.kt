@@ -48,6 +48,10 @@ class FirstFragment : Fragment() {
         override fun handleSkipToQueueItem(id: Long) {
             Timber.tag("Test").d("playing from id ")
         }
+
+        override fun handleCustomActions(action: String?, extras: Bundle?) {
+            Timber.tag("Test").d("custom action")
+        }
     }
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
