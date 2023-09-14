@@ -286,23 +286,27 @@ class NotificationManager internal constructor(
             instanceId: Int
         ): MutableMap<String, NotificationCompat.Action> {
             if (!needsCustomActionsToAddMissingButtons) return mutableMapOf()
-            val actionMap = mutableMapOf(
-                REWIND to createNotificationAction(
-                    rewindIcon ?: DEFAULT_REWIND_ICON,
-                    REWIND,
-                    instanceId
-                ),
-                FORWARD to createNotificationAction(
-                    forwardIcon ?: DEFAULT_FORWARD_ICON,
-                    FORWARD,
-                    instanceId
-                ),
-                STOP to createNotificationAction(
-                    stopIcon ?: DEFAULT_STOP_ICON,
-                    STOP,
-                    instanceId
+            var actionMap: MutableMap<String, NotificationCompat.Action> = mutableMapOf()
+            // only use rewind/forward/stop mapping with android >13.
+            if (Build.VERSION.SDK_INT >= 33) {
+                actionMap = mutableMapOf(
+                    REWIND to createNotificationAction(
+                        rewindIcon ?: DEFAULT_REWIND_ICON,
+                        REWIND,
+                        instanceId
+                    ),
+                    FORWARD to createNotificationAction(
+                        forwardIcon ?: DEFAULT_FORWARD_ICON,
+                        FORWARD,
+                        instanceId
+                    ),
+                    STOP to createNotificationAction(
+                        stopIcon ?: DEFAULT_STOP_ICON,
+                        STOP,
+                        instanceId
+                    )
                 )
-            )
+            }
             customIcons.forEach { (key, value) ->
                 actionMap[key] = createNotificationAction(value?: DEFAULT_STOP_ICON, key, instanceId)
             }
