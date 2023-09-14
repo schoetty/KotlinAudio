@@ -372,7 +372,9 @@ abstract class BaseAudioPlayer internal constructor(
             notificationManager.notificationMetadata = NotificationMetadata(
                 overrideAudioItem?.title ?: currentItem?.title,
                 overrideAudioItem?.artist ?: currentItem?.artist,
-                overrideAudioItem?.artwork ?: currentItem?.artwork
+                overrideAudioItem?.artwork ?: currentItem?.artwork,
+                overrideAudioItem?.duration ?: currentItem?.duration
+
             )
         }
     }
