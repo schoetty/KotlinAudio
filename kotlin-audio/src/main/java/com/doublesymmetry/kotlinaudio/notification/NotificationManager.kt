@@ -236,7 +236,7 @@ class NotificationManager internal constructor(
             putString(MediaMetadataCompat.METADATA_KEY_TITLE, notificationMetadata?.title?: mediaItem?.title)
             putString(MediaMetadataCompat.METADATA_KEY_ALBUM, mediaItem?.albumTitle)
             putString(MediaMetadataCompat.METADATA_KEY_GENRE, currentMediaMetadata?.genre.toString())
-            putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mediaItem?.duration?: -1)
+            putLong(MediaMetadataCompat.METADATA_KEY_DURATION, mediaItem?.duration?: player.duration)
             putString(MediaMetadataCompat.METADATA_KEY_ART_URI, notificationMetadata?.artworkUrl?: mediaItem?.artwork)
             putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, audioHolder?.artworkBitmap);
             putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, audioHolder?.artworkBitmap);
