@@ -307,6 +307,9 @@ abstract class BaseAudioPlayer internal constructor(
                 .build();
             exoPlayer.setAudioAttributes(audioAttributes, playerConfig.handleAudioFocus);
             mediaSessionConnector.setPlayer(playerToUse)
+            mediaSessionConnector.setMediaMetadataProvider {
+                notificationManager.getMediaMetadataCompat()
+            }
         }
 
         playerEventHolder.updateAudioPlayerState(AudioPlayerState.IDLE)
