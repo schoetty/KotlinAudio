@@ -77,11 +77,13 @@ class NotificationManager internal constructor(
             val artwork = getMediaItemArtworkUrl()
             val holder = player.currentMediaItem?.getAudioItemHolder()
             if (artwork != null && holder?.artworkBitmap == null) {
+                var imgrequest = ImageRequest.Builder(context)
+                    .data(artwork)
+                if (Build.MANUFACTURER == "samsung") {
+                    imgrequest = imgrequest.transformations(CropSquareTransformation())
+                }
                 context.imageLoader.enqueue(
-                    ImageRequest.Builder(context)
-                        .data(artwork)
-                        .transformations(CropSquareTransformation())
-                        .target { result ->
+                    imgrequest.target { result ->
                             val resultBitmap = (result as BitmapDrawable).bitmap
                             holder?.artworkBitmap = resultBitmap
                             invalidate()
