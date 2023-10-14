@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.RatingCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat
 import androidx.media.AudioAttributesCompat
@@ -707,6 +708,14 @@ abstract class BaseAudioPlayer internal constructor(
         }
 
         playerEventHolder.updateOnAudioFocusChanged(isPaused, isPermanent)
+    }
+
+    fun setMediaSessionError(message: String, errorCode: Int = PlaybackStateCompat.ERROR_CODE_APP_ERROR) {
+        mediaSession.setPlaybackState(
+            PlaybackStateCompat.Builder()
+                .setState(PlaybackStateCompat.STATE_ERROR, 0, 1f)
+                .setErrorMessage(errorCode, message)
+                .build())
     }
 
     companion object {
