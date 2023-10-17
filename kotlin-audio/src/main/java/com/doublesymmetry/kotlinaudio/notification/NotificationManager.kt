@@ -464,7 +464,7 @@ class NotificationManager internal constructor(
                     is Capability.Backward -> REWIND
                     is Capability.Forward -> FORWARD
                     is Capability.Stop -> STOP
-                    is Capability.CustomAction -> it.customAction
+                    is Capability.CUSTOM_ACTION -> it.customAction
                     else -> null
                 }
             }
@@ -584,9 +584,9 @@ class NotificationManager internal constructor(
                         rewindIcon = capability.notificationOptions?.icon ?: rewindIcon
                         PlaybackStateCompat.ACTION_REWIND
                     }
-                    is Capability.CustomAction -> {
-                        stopIcon = capability.notificationOptions?.icon ?: stopIcon
-                        customIcons[capability.customAction ?: "DEFAULT_CUSTOM"] = capability.notificationOptions?.icon ?: stopIcon
+                    is Capability.CUSTOM_ACTION -> {
+                        stopIcon = button.icon ?: stopIcon
+                        customIcons[button.customAction ?: "DEFAULT_CUSTOM"] = button.icon ?: stopIcon
                         PlaybackStateCompat.ACTION_SET_RATING
                     }
                     else -> 0
@@ -608,7 +608,7 @@ class NotificationManager internal constructor(
                         is Capability.Backward -> createMediaSessionAction(rewindIcon ?: DEFAULT_REWIND_ICON, REWIND)
                         is Capability.Forward -> createMediaSessionAction(forwardIcon ?: DEFAULT_FORWARD_ICON, FORWARD)
                         is Capability.Stop -> createMediaSessionAction(stopIcon ?: DEFAULT_STOP_ICON, STOP)
-                        is Capability.CustomAction -> createMediaSessionAction(customIcons[it.customAction] ?: DEFAULT_CUSTOM_ICON, it.customAction ?: "NO_ACTION_CODE_PROVIDED")
+                        is Capability.CUSTOM_ACTION -> createMediaSessionAction(customIcons[it.customAction] ?: DEFAULT_CUSTOM_ICON, it.customAction ?: "NO_ACTION_CODE_PROVIDED")
                         else -> null
                     }
                 }

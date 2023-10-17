@@ -52,12 +52,6 @@ sealed class Capability(open val showInNotification: Boolean = true) {
         val notificationOptions: NofiticationActionOptions = NofiticationActionOptions.DEFAULT
     ) : Capability()
 
-    data class CustomAction(
-        override val showInNotification: Boolean = true,
-        val notificationOptions: NofiticationActionOptions = NofiticationActionOptions.DEFAULT,
-        val customAction: String
-    ) : Capability()
-
     data class SetRating(val type: Int) : Capability(showInNotification = false)
 }
 

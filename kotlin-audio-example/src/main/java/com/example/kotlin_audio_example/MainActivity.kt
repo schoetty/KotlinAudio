@@ -190,8 +190,8 @@ class MainActivity : ComponentActivity() {
                 Capability.Previous(),
                 Capability.Forward(notificationOptions = NofiticationActionOptions(isCompact = false)),
                 Capability.Backward(notificationOptions = NofiticationActionOptions(isCompact = false, icon = R.drawable.exo_icon_circular_play)),
-                Capability.CustomAction(customAction="customaction1"),
-                Capability.CustomAction(customAction="customaction2"),
+                Capability.CUSTOM_ACTION(customAction="customaction1"),
+                Capability.CUSTOM_ACTION(customAction="customaction2"),
                 Capability.SeekTo
             ),
             notificationOptions = NotificationOptions(
