@@ -1,6 +1,7 @@
 package com.doublesymmetry.kotlinaudio.players
 
 import android.content.Context
+import android.content.Intent
 import android.media.AudioManager
 import android.media.AudioManager.AUDIOFOCUS_LOSS
 import android.net.Uri
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.RatingCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.view.KeyEvent
 import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat
 import androidx.media.AudioAttributesCompat
@@ -199,6 +201,27 @@ abstract class BaseAudioPlayer internal constructor(
             if (playerConfig.interceptPlayerActionsTriggeredExternally) createForwardingPlayer() else exoPlayer
 
         mediaSession.setCallback(object: MediaSessionCompat.Callback() {
+            // HACK: special for podverse that intercepts SkipNext and SkipPrevious and handles accordingly
+            // as podverse does not enable these playback capabilities
+            override fun onMediaButtonEvent(mediaButtonEvent: Intent?): Boolean {
+                if (mediaButtonEvent?.action == Intent.ACTION_MEDIA_BUTTON) {
+                    val event = mediaButtonEvent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT)
+                    if (event != null && event.action == KeyEvent.ACTION_DOWN) {
+                        when (event.keyCode) {
+                            KeyEvent.KEYCODE_MEDIA_NEXT -> {
+                                this.onSkipToNext()
+                                return true
+                            }
+                            KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
+                                this.onSkipToPrevious()
+                                return true
+                            } else -> {
+                            }
+                        }
+                    }
+                }
+                return super.onMediaButtonEvent(mediaButtonEvent)
+            }
             override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
                 Timber.tag("GVATest").d("playing from mediaID: %s", mediaId)
                 mediaSessionCallback.handlePlayFromMediaId(mediaId, extras)

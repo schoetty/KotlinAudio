@@ -157,8 +157,6 @@ class FirstFragment : Fragment() {
         val notificationConfig = NotificationConfig(
             listOf(
                 NotificationButton.PLAY_PAUSE(),
-                NotificationButton.NEXT(isCompact = true),
-                NotificationButton.PREVIOUS(isCompact = true),
                 NotificationButton.BACKWARD(isCompact = true),
                 NotificationButton.FORWARD(isCompact = true, icon = com.google.android.exoplayer2.ui.R.drawable.exo_icon_circular_play),
                 NotificationButton.SEEK_TO
