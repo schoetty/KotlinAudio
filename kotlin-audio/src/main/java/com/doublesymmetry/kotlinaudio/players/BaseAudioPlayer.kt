@@ -215,7 +215,14 @@ abstract class BaseAudioPlayer internal constructor(
                             KeyEvent.KEYCODE_MEDIA_PREVIOUS -> {
                                 this.onSkipToPrevious()
                                 return true
-                            } else -> {
+                            }
+                            KeyEvent.KEYCODE_MEDIA_FAST_FORWARD, KeyEvent.KEYCODE_MEDIA_SKIP_FORWARD, KeyEvent.KEYCODE_MEDIA_STEP_FORWARD -> {
+                                this.onFastForward()
+                            }
+                            KeyEvent.KEYCODE_MEDIA_REWIND, KeyEvent.KEYCODE_MEDIA_SKIP_BACKWARD, KeyEvent.KEYCODE_MEDIA_STEP_BACKWARD -> {
+                                this.onRewind()
+                            }
+                            else -> {
                             }
                         }
                     }
