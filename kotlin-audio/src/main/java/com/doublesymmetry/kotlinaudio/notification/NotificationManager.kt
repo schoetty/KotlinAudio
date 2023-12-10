@@ -80,9 +80,6 @@ class NotificationManager internal constructor(
             if (artwork != null && holder?.artworkBitmap == null) {
                 var imgrequest = ImageRequest.Builder(context)
                     .data(artwork)
-                if (Build.MANUFACTURER == "samsung") {
-                    imgrequest = imgrequest.transformations(CropSquareTransformation())
-                }
                 context.imageLoader.enqueue(
                     imgrequest.target { result ->
                             val resultBitmap = (result as BitmapDrawable).bitmap
