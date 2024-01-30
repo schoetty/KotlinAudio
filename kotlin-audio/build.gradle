@@ -5,9 +5,9 @@ plugins {
     id 'de.mannodermaus.android-junit5'
 }
 
-def versionNumber = '2.0.0'
+def versionNumber = '2.0.0-aa23'
 
-group = 'com.github.doublesymmetry'
+group = 'com.github.schoetty'
 version = versionNumber
 
 android {
@@ -76,7 +76,7 @@ afterEvaluate {
                 artifact sourcesJar
 
                 // You can then customize attributes of the publication as shown below.
-                groupId = 'com.github.doublesymmetry'
+                groupId = 'com.github.schoetty'
                 artifactId = 'kotlin-audio'
                 version = versionNumber
             }

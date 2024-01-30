@@ -6,8 +6,10 @@ import android.media.AudioManager.AUDIOFOCUS_LOSS
 import android.net.Uri
 import android.os.Bundle
 import android.os.ResultReceiver
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.RatingCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.annotation.CallSuper
 import androidx.core.content.ContextCompat
 import androidx.media.AudioAttributesCompat
@@ -16,6 +18,7 @@ import androidx.media.AudioAttributesCompat.USAGE_MEDIA
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
 import androidx.media.AudioManagerCompat.AUDIOFOCUS_GAIN
+import androidx.media.utils.MediaConstants
 import com.doublesymmetry.kotlinaudio.event.EventHolder
 import com.doublesymmetry.kotlinaudio.event.NotificationEventHolder
 import com.doublesymmetry.kotlinaudio.event.PlayerEventHolder
@@ -237,6 +240,20 @@ abstract class BaseAudioPlayer internal constructor(
         mediaSession.setCallback(object: MediaSessionCompat.Callback() {
             override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
                 Timber.tag("GVATest").d("playing from mediaID: %s", mediaId)
+
+                mediaSession.setMetadata(
+                    MediaMetadataCompat.Builder()
+                        .putString(android.media.MediaMetadata.METADATA_KEY_MEDIA_ID, mediaId)
+                        .build())
+
+                val playbackStateExtras = Bundle()
+                playbackStateExtras.putString(
+                    MediaConstants.PLAYBACK_STATE_EXTRAS_KEY_MEDIA_ID, mediaId)
+                mediaSession.setPlaybackState(
+                    PlaybackStateCompat.Builder()
+                        .setExtras(playbackStateExtras)
+                        .build())
+
                 mediaSessionCallback.handlePlayFromMediaId(mediaId, extras)
             }
 
