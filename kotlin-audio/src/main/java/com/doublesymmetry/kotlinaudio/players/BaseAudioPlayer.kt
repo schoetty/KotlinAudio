@@ -237,6 +237,20 @@ abstract class BaseAudioPlayer internal constructor(
         mediaSession.setCallback(object: MediaSessionCompat.Callback() {
             override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
                 Timber.tag("GVATest").d("playing from mediaID: %s", mediaId)
+
+                mediaSession.setMetadata(
+                    MediaMetadataCompat.Builder()
+                        .putString(MediaMetadata.METADATA_KEY_MEDIA_ID, mediaId)
+                        .build())
+
+                val playbackStateExtras = Bundle()
+                playbackStateExtras.putString(
+                    MediaConstants.PLAYBACK_STATE_EXTRAS_KEY_MEDIA_ID, mediaId)
+                mediaSession.setPlaybackState(
+                    PlaybackStateCompat.Builder()
+                        .setExtras(playbackStateExtras)
+                        .build())
+
                 mediaSessionCallback.handlePlayFromMediaId(mediaId, extras)
             }
 
